@@ -1,0 +1,7 @@
+temp.py
+
+/venv
+/env
+
+.env
+*.__pychache__/
