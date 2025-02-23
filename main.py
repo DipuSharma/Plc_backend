@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.config.settings import setting
 from src.worker.celery_worker import celery_app
 from src.config.mqtt_client import start_mqtt
+from src.app.plc_module.router import router
 
 
 app = FastAPI(
@@ -25,7 +26,7 @@ app.add_middleware(
 
 # app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# app.include_router(auth_router.router, prefix="/auth", tags=["Auth"])
+app.include_router(router, prefix="/plc", tags=["Plc"])
 
 
 if __name__ == "__main__":

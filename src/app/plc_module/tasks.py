@@ -23,10 +23,9 @@ def fetch_plc_messages(self):
         loop.run_until_complete(fetch_data())
 
 async def fetch_data():
-    plcs = await plc_collection.find({}, {"plc_id": 1}).to_list(length=None)  # ✅ Await this!
-    
+    plcs = await plc_collection.find({}, {"plc_id": 1}).to_list(length=None)
     for plc in plcs:
         plc_id = plc["plc_id"]
-        message = await message_collection.find_one({"plc_id": plc_id}, {"message": 1})  # ✅ Await this!
+        message = await message_collection.find_one({"plc_id": plc_id}, {"message": 1})
         if message:
-            process_plc_message.delay(plc_id, message["message"])  # ✅ Use Celery's .delay()
+            process_plc_message.delay(plc_id, message["message"])

@@ -17,8 +17,6 @@ def on_message(client, userdata, msg):
     # Store in MongoDB
     message_data = {"plc_id": plc_id, "message": payload}
     message_collection.insert_one(message_data)
-
-    # Process with Celery
     process_plc_message.delay(plc_id, payload)
 
     print(f"Received from {msg.topic}: {payload}")
@@ -27,7 +25,7 @@ def on_message(client, userdata, msg):
 mqtt_client = mqtt.Client()
 mqtt_client.on_connect = on_connect
 mqtt_client.on_message = on_message
-mqtt_client.connect(setting.MQTT_BROKER, setting.MQTT_PORT, 60)
+mqtt_client.connect(setting.MQTT_BROKER, int(setting.MQTT_PORT), 60)
 
 def start_mqtt():
     mqtt_client.loop_start()
