@@ -7,7 +7,7 @@ from functools import lru_cache
 load_dotenv()
 
 
-@lru_cache()
+# @lru_cache()
 class Settings:
     TAGS = [
         {"name": "Auth", "description": "This is Authentication Routes"},

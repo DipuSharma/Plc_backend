@@ -23,6 +23,7 @@ prompt_toolkit==3.0.50
 psutil==7.0.0
 pydantic==2.10.6
 pydantic_core==2.27.2
+pymodbus==3.8.6
 pymongo==4.11.1
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1

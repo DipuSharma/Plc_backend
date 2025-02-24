@@ -1,6 +1,5 @@
 from celery import Celery
 from src.config.settings import setting
-from celery.schedules import crontab
 
 # Create Celery app
 celery_app = Celery(
@@ -22,6 +21,10 @@ celery_app.conf.beat_schedule = {
     "delete-inactive-companies": {
         "task": "src.app.plc_module.tasks.fetch_plc_messages",
         "schedule": 5.0,
+    },
+    "fetch-multiple-plcs-every-second": {
+        "task": "src.app.plc_module.tasks.fetch_all_plc_messages",
+        "schedule": 1.0,  # Every second
     },
 }
 
