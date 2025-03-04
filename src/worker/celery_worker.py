@@ -1,36 +1,37 @@
 from celery import Celery
 from src.config.settings import setting
 
-# Create Celery app
+# Initialize Celery app
 celery_app = Celery(
     "worker",
-    broker=setting.CELERY_BROKER_URL,
-    backend=setting.CELERY_RESULT_BACKEND,
+    broker=setting.CELERY_BROKER_URL,   # RabbitMQ broker
+    backend=setting.CELERY_RESULT_BACKEND,  # Redis result backend
 )
 
+# Configure Celery
 celery_app.conf.update(
     task_serializer="json",
-    result_serializer="json",
     accept_content=["json"],
-    result_expires=3600,
-    broker_connection_retry_on_startup=True,
+    result_serializer="json",
+    timezone="UTC",
+    enable_utc=True,
+    broker_connection_retry_on_startup=True
 )
 
-# Define periodic tasks using Celery Beat
+# Auto-discover tasks from modules
+celery_app.autodiscover_tasks(["src.app.plc_module.tasks"])
+
+# Celery Beat (Periodic Tasks)
 celery_app.conf.beat_schedule = {
-    "delete-inactive-companies": {
+    "fetch-plc-messages-every-5-seconds": {
         "task": "src.app.plc_module.tasks.fetch_plc_messages",
         "schedule": 5.0,
     },
     "fetch-multiple-plcs-every-second": {
         "task": "src.app.plc_module.tasks.fetch_all_plc_messages",
-        "schedule": 1.0,  # Every second
+        "schedule": 1.0,
     },
 }
 
-# Load tasks from all modules in the application
-celery_app.autodiscover_tasks(
-    [
-        "src.app.plc_module.tasks",
-    ]
-)
+if __name__ == "__main__":
+    celery_app.start()

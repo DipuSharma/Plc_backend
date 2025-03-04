@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, Request
 from pydantic import BaseModel, Field
 from src.app.plc_module import controller as plc_controller
 from src.config.mongo_db import plc_collection
-from src.app.plc_module.schema import PlcCreateSchema, PlcUpdateSchema, FilterSchema
+from src.app.plc_module.schema import PlcCreateSchema, PlcUpdateSchema, FilterSchema, PlcCommandSchema
 
 router = APIRouter()
 
@@ -33,3 +33,11 @@ async def delete_plc(plc_id: str):
 async def get_all(request: Request, filter: FilterSchema = Depends()):
     result = await plc_controller.get_list(request=request,**filter.dict())
     return {"data": result if result else []}
+
+
+@router.post('/send-command')
+async def send_command(payload: PlcCommandSchema):
+    result, message = await plc_controller.send_command_to_plc(payload.plc_id, payload.command)
+    if not result:
+        raise HTTPException(status_code=400, detail=message)
+    return {"message": message, "result": result}

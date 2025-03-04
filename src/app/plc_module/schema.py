@@ -64,3 +64,18 @@ class PlcDeviceShema(PlcBaseSchema):
                 "status": "active"
             }
         }
+
+
+
+class PlcCommandSchema(BaseModel):
+    plc_id: str = Field(default="", title="PLC ID", description="Name of the PLC")
+    command: str = Field(default="", title="Command to Send", description="Command to send to the PLC")
+
+    class Config:
+        form_model = True
+        json_schema_extra = {
+            "example": {
+                "plc_id": "PLC1",
+                "command": "read"
+            }
+        }

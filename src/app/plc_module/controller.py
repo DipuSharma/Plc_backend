@@ -6,6 +6,40 @@ from pymongo.errors import DuplicateKeyError
 from typing import Optional, List, Dict, Union, Tuple   
 from datetime import datetime
 from src.core.pagination import AsyncPaginator
+from pymodbus.client import ModbusTcpClient
+
+class ModbusClient:
+    def __init__(self, host: str, port: int = 502):
+        self.client = ModbusTcpClient(host, port)
+
+    def connect(self):
+        self.client.connect()
+
+    def close(self):
+        self.client.close()
+
+    def write_register(self, address: int, value: int):
+        """Write a single value to a Modbus register."""
+        try:
+            if not self.client.connected:
+                self.connect()
+            response = self.client.write_register(address, value)
+            return response.isError() is False, "Write successful" if not response.isError() else str(response)
+        except Exception as e:
+            return False, f"Error: {str(e)}"
+
+    def read_register(self, address: int, count: int = 1):
+        """Read values from a Modbus register."""
+        try:
+            if not self.client.connected:
+                self.connect()
+            response = self.client.read_holding_registers(address, count)
+            if response.isError():
+                return None, str(response)
+            return response.registers, "Read successful"
+        except Exception as e:
+            return None, f"Error: {str(e)}"
+
 
 async def add_plc(payload: PlcCreateSchema):
     try:
@@ -159,3 +193,13 @@ async def get_list(
                 record = {}
 
         return records, "Plc list fetched successfully"
+
+async def send_command_to_plc(plc_ip: str, register_address: int, value: int):
+    """Send a command to the PLC via Modbus."""
+    try:
+        modbus = ModbusClient(plc_ip)
+        success, message = modbus.write_register(register_address, value)
+        modbus.close()
+        return success, message
+    except Exception as e:
+        return False, str(e)

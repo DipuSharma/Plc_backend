@@ -2,7 +2,7 @@ from pymongo.errors import PyMongoError
 from motor.motor_asyncio import AsyncIOMotorClient
 from src.config.settings import setting
 
-client = AsyncIOMotorClient('mongodb://localhost:27018')
+client = AsyncIOMotorClient('mongodb://mongodb:27018')
 db = client[setting.DATABASE_NAME]
 
 message_collection = db["plc_message"]

@@ -27,7 +27,7 @@ class Settings:
     CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
     CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
     BASE_DIR: pathlib.Path = pathlib.Path(__file__).resolve().parent.parent
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "mongodb://localhost:27017")
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "mongodb://mongodb:27018")
     DATABASE_NAME: str = os.getenv("DATABASE_NAME", "plc_data")
 
     MQTT_BROKER = os.getenv("MQTT_BROKER")

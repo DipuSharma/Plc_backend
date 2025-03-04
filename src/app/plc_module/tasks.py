@@ -3,7 +3,7 @@ from src.worker.celery_worker import celery_app
 from datetime import datetime
 from src.config.mongo_db import message_collection, plc_collection
 from pymodbus.client import ModbusTcpClient
-executor = ThreadPoolExecutor()
+# executor = ThreadPoolExecutor()
 
 @celery_app.task(bind=True)
 def process_plc_message(plc_id, message):
