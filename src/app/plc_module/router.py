@@ -1,5 +1,5 @@
 from typing import Optional
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, HTTPException
 from pydantic import BaseModel, Field
 from src.app.plc_module import controller as plc_controller
 from src.config.mongo_db import plc_collection
@@ -37,7 +37,7 @@ async def get_all(request: Request, filter: FilterSchema = Depends()):
 
 @router.post('/send-command')
 async def send_command(payload: PlcCommandSchema):
-    result, message = await plc_controller.send_command_to_plc(payload.plc_id, payload.command)
+    result, message = await plc_controller.send_command_to_plc(payload.plc_id, payload.command, payload.value)
     if not result:
         raise HTTPException(status_code=400, detail=message)
     return {"message": message, "result": result}

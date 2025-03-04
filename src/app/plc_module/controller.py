@@ -197,7 +197,10 @@ async def get_list(
 async def send_command_to_plc(plc_ip: str, register_address: int, value: int):
     """Send a command to the PLC via Modbus."""
     try:
-        modbus = ModbusClient(plc_ip)
+        get_plc = await plc_collection.find_one({"plc_id": plc_ip})
+        if not get_plc:
+            raise HTTPException(status_code=404, detail="PLC not found")
+        modbus = ModbusClient(host=get_plc["ip_address"], port=get_plc["port"])
         success, message = modbus.write_register(register_address, value)
         modbus.close()
         return success, message
