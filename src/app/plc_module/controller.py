@@ -1,6 +1,13 @@
 from fastapi import HTTPException, status
 from src.config.mongo_db import plc_collection, iothub_device_collection, message_collection
-from src.app.plc_module.schema import PlcCreateSchema, PlcDeviceShema, PlcUpdateSchema, PlcIotHubCreateSchema, PlcIotHubUpdateSchema, PlcIotHubDeviceSchema
+from src.app.plc_module.schema import (
+    PlcCreateSchema, 
+    PlcDeviceShema, 
+    PlcUpdateSchema, 
+    PlcIotHubCreateSchema, 
+    PlcIotHubUpdateSchema, 
+    PlcIotHubDeviceSchema
+    )
 from fastapi.encoders import jsonable_encoder
 from pymongo.errors import DuplicateKeyError
 from typing import Optional, List, Dict, Union, Tuple   
@@ -199,7 +206,6 @@ async def get_list(
         query_cursor = query_cursor.project(projection)
 
     records = []
-    print("cursore_________________________________________", query_cursor)
     async for doc in query_cursor:
         doc["id"] = str(doc["_id"])
         del doc["_id"]

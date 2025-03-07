@@ -1,7 +1,7 @@
 import asyncio
 from src.worker.celery_worker import celery_app
 from datetime import datetime
-from src.config.mongo_db import message_collection, plc_collection
+from src.config.mongo_db import message_collection, plc_collection, iothub_device_collection
 from pymodbus.client import ModbusTcpClient
 # executor = ThreadPoolExecutor()
 
@@ -38,7 +38,8 @@ def fetch_all_plc_messages():
         try:
             # Fetch PLC configurations from MongoDB
             plcs = await plc_collection.find({}, {"plc_id": 1, "ip_address": 1, "port": 1}).to_list(length=100)
-
+            if not plcs:
+                print("Not plc device found")
             for plc in plcs:
                 plc_id = plc["plc_id"]
                 plc_ip = plc["ip_address"]
@@ -76,3 +77,31 @@ def fetch_all_plc_messages():
     loop.run_until_complete(fetch_and_store())
 
     return "Fetched data from all PLCs"
+
+@celery_app.task
+async def receive_message():
+    """ Receives messages from all devices every 5 seconds """
+    plcs = await iothub_device_collection.find().to_list(length=100)
+    if not plcs:
+        print("Not plc device found")
+    for item in plcs:
+        try:
+            client = IoTHubDeviceClient.create_from_connection_string(item.conn_str)
+            client.connect()
+
+            message = client.receive_message()  # Blocking call
+            if message:
+                message_data = message.data.decode("utf-8")
+                print(f"Received from {item.device_id}: {message_data}")
+
+                # Store in MongoDB
+                collection.insert_one({
+                    "device_id": item.device_id,
+                    "message": message_data,
+                    "timestamp": datetime.utcnow()
+                })
+            
+            client.disconnect()
+        
+        except Exception as e:
+            print(f"Error receiving message from {item.device_id}: {str(e)}")
