@@ -2,17 +2,22 @@ from typing import Optional
 from fastapi import APIRouter, Depends, Request, HTTPException
 from pydantic import BaseModel, Field
 from src.app.plc_module import controller as plc_controller
-from src.config.mongo_db import plc_collection
-from src.app.plc_module.schema import PlcCreateSchema, PlcUpdateSchema, FilterSchema, PlcCommandSchema
+from src.config.mongo_db import plc_collection, message_collection, iothub_device_collection
+from src.app.plc_module.schema import PlcCreateSchema, PlcUpdateSchema, FilterSchema, PlcCommandSchema, PlcIotHubCreateSchema
 
 router = APIRouter()
 
 
   
 
-@router.post('/add-plc')
-async def add_plc(payload: PlcCreateSchema):
-    result, message = await plc_controller.add_plc(payload)
+# @router.post('/add-plc')
+# async def add_plc(payload: PlcCreateSchema):
+#     result, message = await plc_controller.add_plc(payload)
+#     return {"message": message, "result": result if result else None}
+
+@router.post('/add-iot-device')
+async def add_iot_hub_device(payload: PlcIotHubCreateSchema):
+    result, message = await plc_controller.add_iot_hub_device(payload)
     return {"message": message, "result": result if result else None}
 
 
@@ -41,3 +46,4 @@ async def send_command(payload: PlcCommandSchema):
     if not result:
         raise HTTPException(status_code=400, detail=message)
     return {"message": message, "result": result}
+

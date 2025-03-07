@@ -65,8 +65,6 @@ class PlcDeviceShema(PlcBaseSchema):
             }
         }
 
-
-
 class PlcCommandSchema(BaseModel):
     plc_id: str = Field(default="", title="PLC ID", description="Name of the PLC")
     command: str = Field(default="", title="Command to Send", description="Command to send to the PLC")
@@ -79,5 +77,52 @@ class PlcCommandSchema(BaseModel):
                 "plc_id": "PLC1",
                 "command": "read",
                 "value": 0
+            }
+        }
+
+class PlcIoTHubSchema(BaseModel):
+    device_id: str = Field(default="", title="Iot Hub Device ID", description="Iot Hub Device ID")
+    iot_hub_primary_access: str = Field(default="", title="Iot Hub Primary Access", description="Iot Hub Primary Access")
+    iot_hub_secondary_access: str = Field(default="", title="Iot Hub Secondary Access", description="Iot Hub Secondary Access")
+
+    class Config:
+        form_model = True
+        json_schema_extra = {
+            "example": {
+                "device_id": "device_id",
+                "iot_hub_primary_access": "primary_access",
+                "iot_hub_secondary_access": "secondary_access"
+            }
+        }
+
+class PlcIotHubCreateSchema(PlcIoTHubSchema):
+    pass
+
+class PlcIotHubUpdateSchema(PlcIoTHubSchema):
+    pass
+
+class PlcIotHubDeviceSchema(PlcIoTHubSchema):
+    id: str = Field(default="", title="Iot Hub Device ID", description="Iot Hub Device ID")
+
+    class Config:
+        form_model = True
+        json_schema_extra = {
+            "example": {
+                "device_id": "device_id",
+                "iot_hub_primary_access": "primary_access",
+                "iot_hub_secondary_access": "secondary_access"
+            }
+        }
+
+class PlcMessageSchema(BaseModel):
+    message_id: str = Field(default="", title="Message ID", description="Message ID")
+    message: str = Field(default="", title="Message", description="Message")
+
+    class Config:
+        form_model = True
+        json_schema_extra = {
+            "example": {
+                "message_id": "message_id",
+                "message": "message"
             }
         }

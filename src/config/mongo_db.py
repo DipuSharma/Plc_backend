@@ -2,11 +2,12 @@ from pymongo.errors import PyMongoError
 from motor.motor_asyncio import AsyncIOMotorClient
 from src.config.settings import setting
 
-client = AsyncIOMotorClient('mongodb://localhost:27017')
+client = AsyncIOMotorClient('mongodb://127.0.0.1:27017')
 db = client[setting.DATABASE_NAME]
 
 message_collection = db["plc_message"]
 plc_collection = db["plc_device"]
+iothub_device_collection = db["plc_iot_hub"]
 
 
 async def get_session():

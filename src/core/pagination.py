@@ -37,12 +37,37 @@ class AsyncPaginator(Generic[ResponseSchemaType]):
         skip = (self.page - 1) * self.limit
         cursor = self.collection.find(self.search_query).skip(skip).limit(self.limit)
 
-        # results = [self.schema(**doc) async for doc in cursor]
+        if cursor is None:
+            return {
+                "result": [],
+                "total_items": 0,
+                "page": self.page,
+                "limit": self.limit,
+                "total_pages": 0,
+                "next_page_url": None,
+                "previous_page_url": None,
+            }
+
         results = []
         async for doc in cursor:
+            if not doc:
+                continue
             doc["id"] = str(doc["_id"])
             del doc["_id"]
             results.append(self.schema(**doc))
+
+        if not results:
+            return {
+                "result": [],
+                "total_items": 0,
+                "page": self.page,
+                "limit": self.limit,
+                "total_pages": 0,
+                "next_page_url": None,
+                "previous_page_url": None,
+            }
+
+        # Get total count if not set
         if self.total_items == 0:
             await self.get_total_count()
         total_pages = math.ceil(self.total_items / self.limit)
