@@ -4,4 +4,5 @@ temp.py
 /env
 
 .env
+.env.dev
 **/__pycache__/

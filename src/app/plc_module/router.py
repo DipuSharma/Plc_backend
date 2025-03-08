@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, Request, HTTPException
 from pydantic import BaseModel, Field
 from src.app.plc_module import controller as plc_controller
 from src.config.mongo_db import plc_collection, message_collection, iothub_device_collection
+from src.config.response import ResponseModel
 from src.app.plc_module.schema import PlcCreateSchema, PlcUpdateSchema, FilterSchema, PlcCommandSchema, PlcIotHubCreateSchema
 
 router = APIRouter()
@@ -36,9 +37,19 @@ async def delete_plc(plc_id: str):
 
 @router.get('/get-all-plcs')
 async def get_all(request: Request, filter: FilterSchema = Depends()):
-    result = await plc_controller.get_list(request=request,**filter.dict())
-    return {"data": result if result else []}
+    result,msg = await plc_controller.get_list(request=request,**filter.dict())
+    return ResponseModel(data=result, message=msg)
 
+
+@router.get('/get-all-iot-plcs')
+async def get_all(request: Request, filter: FilterSchema = Depends()):
+    result, msg = await plc_controller.get_plc_list(request=request,**filter.dict())
+    return ResponseModel(data=result, message=msg)
+
+@router.get('/get-all-iot-plcs_message')
+async def get_all(request: Request, filter: FilterSchema = Depends()):
+    result, msg = await plc_controller.get_message_list(request=request,**filter.dict())
+    return ResponseModel(data=result, message=msg)
 
 @router.post('/send-command')
 async def send_command(payload: PlcCommandSchema):

@@ -24,13 +24,13 @@ celery_app.autodiscover_tasks(["src.app.plc_module.tasks"])
 # Celery Beat (Periodic Tasks)
 celery_app.conf.beat_schedule = {
     "fetch-plc-messages-every-5-seconds": {
-        "task": "src.app.plc_module.tasks.fetch_plc_messages",
+        "task": "src.app.plc_module.tasks.receive_message",
         "schedule": 5.0,
     },
-    "fetch-multiple-plcs-every-second": {
-        "task": "src.app.plc_module.tasks.fetch_all_plc_messages",
-        "schedule": 1.0,
-    },
+    # "fetch-multiple-plcs-every-second": {
+    #     "task": "src.app.plc_module.tasks.fetch_all_plc_messages",
+    #     "schedule": 1.0,
+    # },
 }
 
 if __name__ == "__main__":
